@@ -2,7 +2,7 @@ AWSTemplateFormatVersion: '2010-09-09'
 Description: Bonita BPM instance using a community Bundle based on H2 database.
 Parameters:
   KeyName:
-    Description: Name of an existing EC2 KeyPair to enable SSH access to the instances
+    Description: "Name of an existing EC2 KeyPair to enable SSH access thru OpenSSH to the instances. Note: You must have created this key previously on security section in EC2 config console (https://console.aws.amazon.com/ec2/)"
     Type: String
     MinLength: '1'
     MaxLength: '255'
