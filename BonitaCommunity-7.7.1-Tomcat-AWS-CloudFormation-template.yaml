@@ -36,7 +36,7 @@ Parameters:
     ConstraintDescription: must be a valid IP CIDR range of the form x.x.x.x/x.
   BonitaFileName:
     Description: Bonita Community Edition file name
-    type: String
+    Type: String
     Default: BonitaCommunity
   BonitaTomcatVersion:
     Description: Bonita Community Edition tomcat bundle version
