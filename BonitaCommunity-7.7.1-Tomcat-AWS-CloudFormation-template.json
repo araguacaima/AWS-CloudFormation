@@ -40,7 +40,7 @@
     },
     "BonitaFileName":{
       "Description":"Bonita Community Edition file name",
-      "type":"String",
+      "Type":"String",
       "Default":"BonitaCommunity"
     },
     "BonitaTomcatVersion":{
