@@ -6,7 +6,6 @@ Parameters:
     Type: String
     MinLength: '1'
     MaxLength: '255'
-    Default: bonita-key-pair
     AllowedPattern: "[\\x20-\\x7E]*"
     ConstraintDescription: can contain only ASCII characters.
   InstanceType:
