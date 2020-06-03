@@ -45,7 +45,7 @@
     },
     "BonitaTomcatVersion":{
       "Description":"Bonita Community Edition tomcat bundle version",
-      "type":"String",
+      "Type":"String",
       "MinLength":"5",
       "MaxLength":"6",
       "Default":"8.5.31",
