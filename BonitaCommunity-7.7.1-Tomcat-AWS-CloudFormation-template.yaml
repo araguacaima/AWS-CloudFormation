@@ -37,22 +37,13 @@ Parameters:
     Description: Bonita Community Edition file name
     Type: String
     Default: BonitaCommunity
-  BonitaTomcatVersion:
-    Description: Bonita Community Edition tomcat bundle version
-    Type: String
-    MinLength: '5'
-    MaxLength: '6'
-    Default: 8.5.31
-    AllowedPattern: "(\\d{1,1})\\.(\\d{1,1})\\.(\\d{1,2})"
-    ConstraintDescription: must be an exisiting Bonita BPM Tomcat version of the form
-      x.y.z
   BonitaVersion:
     Description: The Bonita BPM version
     Type: String
     MinLength: '5'
     MaxLength: '6'
-    Default: 7.7.1
-    AllowedPattern: "(\\d{1,1})\\.(\\d{1,1})\\.(\\d{1,2})"
+    Default: '7.10.4'
+    AllowedPattern: "(\\d{1,1})\\.(\\d{1,2})\\.(\\d{1,2})"
     ConstraintDescription: must be an exisiting Bonita BPM version of the form x.y.z
   TenantLogin:
     Description: Username for tenant access
@@ -156,50 +147,40 @@ Resources:
           Fn::Join:
           - ''
           - - "#cloud-config\n"
-            - 'apt_update: true
-
-'
-            - 'apt_upgrade: true
-
-'
-            - 'packages:
-
-'
-            - "- openjdk-7-jre-headless\n"
-            - "- unzip\n"
-            - 'runcmd:
-
-'
-            - "- wget http://download.forge.ow2.org/bonita/"
+            - 'apt_update: true'
+            - 'apt_upgrade: true'
+            - 'runcmd:'
+            - 'add-apt-repository ppa:openjdk-r/ppa -y'
+            - 'apt-get update -y'
+            - 'apt-get install openjdk-8-jdk -y'
+            - 'apt-get install unzip -y'
+            - "- wget http://release.ow2.org/bonita/"
             - Ref: BonitaFileName
             - "-"
             - Ref: BonitaVersion
-            - "-Tomcat-"
-            - Ref: BonitaTomcatVersion
             - ".zip -O /opt/bonitaBPM.zip \n"
-            - "- cd /opt/; unzip -q bonitaBPM.zip; DIR=`ls -d BonitaBPM*`; ln -s $DIR
-              BonitaBPM;"
-            - "- sed -i -e 's!platformAdminUsername=.*!platformAdminUsername="
+            - "- BUNDLE_HOME=/opt/"
+            - Ref: BonitaFileName
+            - "-"
+            - Ref: BonitaVersion
+            - ";\n"
+            - "- cd /opt/; unzip -q bonitaBPM.zip;"
+            - "- sed -i -e 's!#platformAdminUsername=.*!platformAdminUsername="
             - Ref: PlatformLogin
-            - "!' -e 's!platformAdminPassword=.*!platformAdminPassword="
+            - "!' -e 's!#platformAdminPassword=.*!platformAdminPassword="
             - Ref: PlatformPassword
-            - "!' /opt/BonitaBPM/bonita/server/platform/conf/bonita-platform.properties
-              && sed -i -e 's!platform.username=.*!platform.username="
-            - Ref: PlatformLogin
-            - "!' -e 's!platform.password=.*!platform.password="
-            - Ref: PlatformPassword
-            - "!' /opt/BonitaBPM/bonita/client/platform/conf/platform-tenant-config.properties\n"
-            - "- sed -i -e 's!userName = .*!userName = "
+            - "!' $BUNDLE_HOME/setup/platform_conf/initial/platform_engine/bonita-platform-community-custom.properties\n"
+            - "- sed -i -e 's!#userName = .*!userName = "
             - Ref: TenantLogin
-            - "!' -e 's!userPassword = .*!userPassword = "
+            - "!' -e 's!#userPassword = .*!userPassword = "
             - Ref: TenantPassword
-            - "!' /opt/BonitaBPM/bonita/server/platform/tenant-template/conf/bonita-server.properties
-              && sed -i -e 's!platform.tenant.default.username=.*!platform.tenant.default.username="
+            - "!' $BUNDLE_HOME/setup/platform_conf/initial/tenant_template_engine/bonita-tenant-community-custom.properties\n"
+            - "- sed -i -e 's!platform.tenant.default.username=.*!platform.tenant.default.username="
             - Ref: TenantLogin
             - "!' -e 's!platform.tenant.default.password=.*!platform.tenant.default.password="
             - Ref: TenantPassword
-            - "!' /opt/BonitaBPM/bonita/client/platform/conf/platform-tenant-config.properties\n"
-            - "- /opt/BonitaBPM/bin/startup.sh\n"
+            - "!' $BUNDLE_HOME/setup/platform_conf/initial/platform_portal/platform-tenant-config.properties\n"
+            - "- yes | $BUNDLE_HOME/start-bonita.sh\n"
   WebServerSecurityGroup:
     Type: AWS::EC2::SecurityGroup
     Properties:
